@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {" "}
       {/* White background and black text */}
       <Topbar />
-      <main className="flex-1 px-[15%] py-12">{children}</main>
+      <main className="flex-1 px-[20%] py-12">{children}</main>
       <Footer />
     </div>
   );

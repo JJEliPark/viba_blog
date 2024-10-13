@@ -1,22 +1,44 @@
-const Tags = () => {
-  const tags = [
-    "tech",
-    "recruitment",
-    "career",
-    "kakao",
-    "new-crew",
-    "conference",
-    "meetup",
-    "developer",
-    "ai",
-  ];
+"use client";
+
+import React, { useState } from "react";
+
+// Props 정의에 posts 추가
+interface TagsProps {
+  onTagChange: (tags: string[]) => void;
+  posts: { tags: string[] }[]; // 게시글 데이터에서 tags 배열을 받음
+}
+
+const Tags: React.FC<TagsProps> = ({ onTagChange, posts }) => {
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // 게시글들로부터 모든 태그를 모으고, 중복을 제거하여 태그 목록 생성
+  const allTags = Array.from(new Set(posts.flatMap((post) => post.tags)));
+
+  const handleTagClick = (tag: string) => {
+    if (selectedTags.includes(tag)) {
+      // 태그가 이미 선택되어 있으면 해제
+      const updatedTags = selectedTags.filter((t) => t !== tag);
+      setSelectedTags(updatedTags);
+      onTagChange(updatedTags);
+    } else {
+      // 태그가 선택되어 있지 않으면 추가
+      const updatedTags = [...selectedTags, tag];
+      setSelectedTags(updatedTags);
+      onTagChange(updatedTags);
+    }
+  };
 
   return (
     <div className="flex flex-wrap gap-3 justify-center mb-6">
-      {tags.map((tag) => (
+      {allTags.map((tag) => (
         <button
           key={tag}
-          className="px-4 py-2 bg-gray-200 rounded-full text-sm hover:bg-gray-300"
+          onClick={() => handleTagClick(tag)}
+          className={`px-4 py-2 rounded-full text-sm ${
+            selectedTags.includes(tag)
+              ? "bg-blue-300 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+          }`}
         >
           {tag}
         </button>

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 
     // GitHub API로 파일 업로드 요청
     const response = await fetch(
-      `https://api.github.com/repos/JJEliPark/tech-blog/contents/${filePath}`,
+      `https://api.github.com/repos/JJEliPark/viba_blog/contents/${filePath}`,
       {
         method: "PUT",
         headers: {
