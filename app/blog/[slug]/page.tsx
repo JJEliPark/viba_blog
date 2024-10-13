@@ -3,12 +3,20 @@
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm"; // GitHub 스타일의 마크다운 지원
+import rehypeRaw from "rehype-raw"; // HTML 태그 지원
+import rehypeSlug from "rehype-slug"; // 제목에 슬러그 추가
+import rehypeAutoLinkHeadings from "rehype-autolink-headings"; // 제목에 자동 링크 추가
 import Layout from "@/components/Layout";
 import Giscus from "@giscus/react"; // Giscus React 컴포넌트 추가
 
+import {
+  MarkdownHeader,
+  MarkdownCode,
+  MarkdownTable,
+} from "@/components/MarkdownComponents"; // 분리된 컴포넌트 가져오기
+
 // API에서 마크다운 파일을 가져오는 함수
 async function fetchPost(slug: string): Promise<string> {
-  // 슬러그를 URL 디코딩하여 서버 API에 전달
   const decodeSlug = decodeURIComponent(slug);
 
   const res = await fetch("/api/fetch-post", {
@@ -28,18 +36,37 @@ async function fetchPost(slug: string): Promise<string> {
   return content;
 }
 
-// 동적 라우팅으로 들어온 슬러그에 따라 마크다운 렌더링
 export default function PostPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
-
   const [content, setContent] = useState<string>("");
+  const [metaData, setMetaData] = useState({
+    title: "",
+    date: "",
+    description: "",
+    tags: [] as string[],
+  });
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
         const fetchedContent = await fetchPost(slug);
-        setContent(fetchedContent);
-        console.log(fetchedContent);
+        const [meta, ...body] = fetchedContent.split("---\n").slice(1);
+        const metaLines = meta.trim().split("\n");
+
+        const metaDataObj = metaLines.reduce((acc: any, line) => {
+          const [key, value] = line.split(": ");
+          acc[key.trim()] = value.replace(/["']/g, "").trim();
+          return acc;
+        }, {});
+
+        setMetaData({
+          title: metaDataObj.title || "",
+          date: metaDataObj.date || "",
+          description: metaDataObj.description || "",
+          tags: metaDataObj.tags ? metaDataObj.tags.split(", ") : [],
+        });
+
+        setContent(body.join("\n---\n"));
       } catch (error) {
         console.error("게시글을 불러오는 중 오류가 발생했습니다:", error);
         setContent("게시글을 불러오는 중 오류가 발생했습니다.");
@@ -49,31 +76,48 @@ export default function PostPage({ params }: { params: { slug: string } }) {
     fetchContent();
   }, [slug]);
 
-  // 슬러그를 디코딩하여 제목으로 사용
-  const decodedTitle = decodeURIComponent(slug.replace("-", " "));
-
   return (
     <Layout>
-      <h1 className="text-3xl font-bold mb-8">{decodedTitle}</h1>
-      <article className="prose">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      <h1 className="text-3xl font-bold mb-2">{metaData.title}</h1>
+      <div className="flex justify-between text-sm text-gray-500 mb-8">
+        <p>{metaData.description}</p>
+        <p>{metaData.date}</p>
+      </div>
+
+      <article className="prose prose-lg max-w-none markdown">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw, rehypeSlug, rehypeAutoLinkHeadings]}
+          components={{
+            ...MarkdownHeader,
+            ...MarkdownCode,
+            ...MarkdownTable,
+          }}
+        >
+          {content}
+        </ReactMarkdown>
       </article>
 
-      {/* Giscus 댓글 기능 추가 */}
+      {metaData.tags.length > 0 && (
+        <div className="mt-4 text-sm text-gray-500">
+          Tags: {metaData.tags.join(", ")}
+        </div>
+      )}
+
       <div className="mt-8">
         <Giscus
           id="comments"
-          repo="JJEliPark/viba_blog" // GitHub 저장소
-          repoId="R_kgDOM_MBGA" // 저장소 ID
-          category="General" // 카테고리 이름
-          categoryId="DIC_kwDOM_MBGM4CjUBj" // 카테고리 ID
-          mapping="pathname" // URL 경로를 기준으로 댓글 매핑
-          reactionsEnabled="1" // 반응(이모지) 기능 활성화
+          repo="JJEliPark/viba_blog"
+          repoId="R_kgDOM_MBGA"
+          category="General"
+          categoryId="DIC_kwDOM_MBGM4CjUBj"
+          mapping="pathname"
+          reactionsEnabled="1"
           emitMetadata="0"
-          inputPosition="bottom" // 입력 창 위치 (위 or 아래)
-          theme="light" // 테마 설정
-          lang="ko" // 언어 설정
-          loading="lazy" // 지연 로딩
+          inputPosition="bottom"
+          theme="light"
+          lang="ko"
+          loading="lazy"
         />
       </div>
     </Layout>

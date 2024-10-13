@@ -11,8 +11,10 @@ interface TagsProps {
 const Tags: React.FC<TagsProps> = ({ onTagChange, posts }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // 게시글들로부터 모든 태그를 모으고, 중복을 제거하여 태그 목록 생성
-  const allTags = Array.from(new Set(posts.flatMap((post) => post.tags)));
+  // Ensure that posts is a valid array before using flatMap
+  const allTags = Array.from(
+    new Set((Array.isArray(posts) ? posts : []).flatMap((post) => post.tags))
+  );
 
   const handleTagClick = (tag: string) => {
     if (selectedTags.includes(tag)) {
