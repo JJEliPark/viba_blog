@@ -1,28 +1,41 @@
-import React from "react";
+// components/MarkdownComponents.tsx
 
-// GitHub 스타일 헤더
+import React from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { ghcolors } from "react-syntax-highlighter/dist/cjs/styles/prism";
+
+// 헤더 컴포넌트
 export const MarkdownHeader = {
-  h1: (props: any) => (
-    <h1 {...props} className="relative">
-      {props.children}
+  h1: ({ node, ...props }: any) => (
+    <>
+      <h1 className="text-4xl font-bold" {...props} />
       <hr className="border-t border-gray-300 mt-2 mb-6" />
-    </h1>
+    </>
   ),
-  h2: (props: any) => (
-    <h2 {...props} className="relative">
-      {props.children}
+  h2: ({ node, ...props }: any) => (
+    <>
+      <h2 className="text-3xl font-bold" {...props} />
       <hr className="border-t border-gray-300 mt-2 mb-6" />
-    </h2>
+    </>
   ),
-  h3: (props: any) => (
-    <h3 {...props} className="relative">
-      {props.children}
+  h3: ({ node, ...props }: any) => (
+    <>
+      <h3 className="text-2xl font-semibold" {...props} />
       <hr className="border-t border-gray-300 mt-2 mb-6" />
-    </h3>
+    </>
+  ),
+  h4: ({ node, ...props }: any) => (
+    <h4 className="text-xl font-semibold" {...props} />
+  ),
+  h5: ({ node, ...props }: any) => (
+    <h5 className="text-lg font-semibold" {...props} />
+  ),
+  h6: ({ node, ...props }: any) => (
+    <h6 className="text-base font-semibold" {...props} />
   ),
 };
 
-// 코드 블록 스타일
+// 코드 블록 렌더링 컴포넌트
 export const MarkdownCode = {
   code: (props: {
     inline?: boolean;
@@ -43,35 +56,30 @@ export const MarkdownCode = {
   },
 };
 
-// 테이블 스타일
+// 테이블 컴포넌트
 export const MarkdownTable = {
-  table: (props: any) => (
-    <table className="min-w-full table-auto border-collapse border border-gray-200">
-      {props.children}
-    </table>
-  ),
-  thead: (props: any) => (
-    <thead className="bg-gray-100">{props.children}</thead>
-  ),
-  tbody: (props: any) => (
-    <tbody className="bg-white divide-y divide-gray-200">
-      {props.children}
-    </tbody>
-  ),
-  th: (props: any) => (
-    <th
+  table: ({ node, ...props }: any) => (
+    <table
+      className="table-auto border-collapse border border-gray-300"
       {...props}
-      className="px-4 py-2 text-left text-sm font-medium text-gray-900 border border-gray-300"
-    >
-      {props.children}
-    </th>
+    />
   ),
-  td: (props: any) => (
-    <td
+  thead: ({ node, ...props }: any) => (
+    <thead className="bg-gray-100" {...props} />
+  ),
+  th: ({ node, ...props }: any) => (
+    <th className="border border-gray-300 px-4 py-2" {...props} />
+  ),
+  td: ({ node, ...props }: any) => (
+    <td className="border border-gray-300 px-4 py-2" {...props} />
+  ),
+};
+
+export const MarkdownImage = {
+  img: ({ node, ...props }: any) => (
+    <img
+      style={{ display: "block", margin: "auto", maxWidth: "100%" }} // 가운데 정렬 및 너비 100%
       {...props}
-      className="px-4 py-2 text-sm text-gray-700 border border-gray-300"
-    >
-      {props.children}
-    </td>
+    />
   ),
 };

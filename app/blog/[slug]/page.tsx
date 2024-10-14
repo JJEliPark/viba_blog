@@ -13,7 +13,8 @@ import {
   MarkdownHeader,
   MarkdownCode,
   MarkdownTable,
-} from "@/components/MarkdownComponents"; // 분리된 컴포넌트 가져오기
+  MarkdownImage, // 추가된 이미지 컴포넌트
+} from "@/components/MarkdownComponents";
 
 // API에서 마크다운 파일을 가져오는 함수
 async function fetchPost(slug: string): Promise<string> {
@@ -92,6 +93,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
             ...MarkdownHeader,
             ...MarkdownCode,
             ...MarkdownTable,
+            ...MarkdownImage, // 이미지 스타일 적용
           }}
         >
           {content}

@@ -147,16 +147,7 @@ ${content}
               required
             />
           </div>
-          <div className="mb-4">
-            <label className="block mb-2">Tags (comma separated)</label>
-            <input
-              type="text"
-              className="border p-2 w-full"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="e.g., tech, career, ai"
-            />
-          </div>
+
           <div className="mb-4 flex items-center justify-between">
             <label className="block mb-2">Content</label>
             <button
@@ -167,16 +158,25 @@ ${content}
               {isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
             </button>
           </div>
+
+          <div className="border p-2 w-full wmde-markdown-var">
+            <MDEditor value={content} onChange={setContent} height={400} />
+          </div>
+
           <div className="mb-4">
-            <div className="border p-2 w-full wmde-markdown-var">
-              <MDEditor value={content} onChange={setContent} height={400} />
-            </div>
+            <label className="block mb-2">Tags (comma separated)</label>
+            <input
+              type="text"
+              className="border p-2 w-full"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="e.g., tech, career, ai"
+            />
           </div>
           <div className="mb-4">
             <label className="block mb-2">Upload Image</label>
             <input type="file" accept="image/*" onChange={handleImageUpload} />
           </div>
-
           {/* 업로드된 이미지 목록 */}
           {imageURLs.length > 0 && (
             <div className="mb-4">
